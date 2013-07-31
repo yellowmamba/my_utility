@@ -1,0 +1,17 @@
+#!/bin/bash
+
+option=$1
+now=$(date +"_%Y-%m-%d_%T")
+
+if [ -z $option ]; then
+    dbs=$(mysql -u root -p -se 'show databases')
+    for db in $dbs; do
+        # dump each db with current timestamp to the designated dir
+        if [ ! -d $db ]; then
+            mkdir -p ~/db_backups/$db
+        fi   
+        destination=$(echo ~/db_backups/$db/$db$now.sql)
+        mysqldump -u root -p $db > $destination
+        echo "$db has been backed up to => $destination"
+    done
+fi
